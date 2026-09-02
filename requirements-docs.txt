@@ -6,3 +6,4 @@ mkdocs
 mkdocs-jupyter
 mkdocs-material
 mkdocstrings-python
+mkdocs-dracula-theme
