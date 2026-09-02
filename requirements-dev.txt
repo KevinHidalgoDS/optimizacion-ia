@@ -1,0 +1,29 @@
+# install basic requirements
+-r requirements.txt
+
+# art of code
+black
+flake8
+pylint
+isort
+pydocstyle
+taskipy
+ruff
+mypy
+
+# tests
+coverage
+unittest-xml-reporting
+pyrefly
+pytest
+
+# doc
+# sphinx
+# sphinx-rtd-theme
+# sphinx-markdown-builder
+# sphinx-math-dollar
+# pypandoc
+mkdocs
+mkdocs-material
+mkdocstrings-python
+mkdocs-jupyter

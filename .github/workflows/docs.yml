@@ -1,0 +1,15 @@
+name: Despliegue de Documentación
+on:
+  push:
+    branches:
+      - main # Se ejecuta cada vez que hay cambios en la rama main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - run: pip install -r requirements-docs.txt
+      - run: mkdocs gh-deploy --force # Compila y publica automáticamente
