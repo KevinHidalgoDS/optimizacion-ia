@@ -26,12 +26,16 @@ Para mantener un ciclo de vida analítico organizado, reproducible y listo para 
 pipelines de datos, se recomienda la siguiente jerarquía de archivos:
 
 ```text
+├── config/              # Parámetros del proyecto (rutas, hiperparámetros, credenciales de ejemplo).
 ├── data/
 │   ├── raw/             # Datos originales e inmutables.
+│   ├── interim/         # Datos en transformación, resultados parciales de limpieza.
 │   ├── processed/       # Datos limpios y listos para modelado.
 │   └── external/        # Datos de terceros o fuentes externas.
 ├── docs/                # Documentación del proyecto (Sphinx/MkDocs), guías y referencias.
 ├── models/              # Modelos entrenados y serializados (ej. .pkl, .h5).
+│   ├── trained/         # Modelos finales listos para inferencia.
+│   ├── checkpoints/     # Puntos de guardado durante entrenamiento.
 ├── notebooks/           # Jupyter Notebooks para exploración y visualización (nombrados secuencialmente).
 ├── src/                 # Código fuente principal del proyecto.
 │   ├── __init__.py
@@ -40,6 +44,10 @@ pipelines de datos, se recomienda la siguiente jerarquía de archivos:
 │   ├── models/          # Scripts para entrenamiento, optimización y predicción.
 │   └── visualization/   # Generación de gráficos y pósteres digitales.
 ├── tests/               # Pruebas unitarias y de integración.
+├── dashboards/          # Aplicaciones interactivas.
+├── reports/             # Resultados y comunicación.
+│   ├── figures/         # imágenes generadas por scripts/notebooks (versionadas o regenerables).
+├── scripts/             # Automatización.
 ├── .gitignore           # Archivos ignorados por Git.
 ├── dvc.yaml             # Pipeline de versionado de datos y modelos.
 ├── environment.yml      # Dependencias para Conda.
