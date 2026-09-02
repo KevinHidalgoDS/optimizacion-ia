@@ -6,15 +6,15 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
+  # pages: write
+  # id-token: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    environment:
-      name: github-pages
+#    environment:
+#      name: github-pages
 
     steps:
       - name: Checkout
@@ -26,16 +26,16 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-docs.txt
       - name: Build documentation
-        # run: mkdocs gh-deploy --force # Compila y publica automáticamente
-        run: mkdocs build
+        run: mkdocs gh-deploy --force # Compila y publica automáticamente
+        # run: mkdocs build
 
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: site
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+#      - name: Setup GitHub Pages
+#        uses: actions/configure-pages@v5
+#
+#      - name: Upload artifact
+#        uses: actions/upload-pages-artifact@v4
+#        with:
+#          path: site
+#
+#      - name: Deploy to GitHub Pages
+#        uses: actions/deploy-pages@v4
