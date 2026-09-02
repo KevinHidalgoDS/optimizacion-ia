@@ -1,0 +1,62 @@
+# config/config_example.yaml
+# Configuración central del proyecto — rutas, parámetros y opciones del pipeline
+
+project:
+  name: "prediccion-churn"
+  version: "1.2.0"
+  seed: 42
+
+paths:
+  data:
+    raw: "data/raw/clientes_2026Q2.csv"
+    interim: "data/interim/"
+    processed: "data/processed/clientes_features_v3.parquet"
+    external: "data/external/"
+  models:
+    trained: "models/trained/"
+    checkpoints: "models/checkpoints/"
+  reports:
+    figures: "reports/figures/"
+    output: "reports/informe_churn_agosto2026.pdf"
+
+data:
+  target_column: "churn"
+  id_column: "cliente_id"
+  test_size: 0.2
+  validation_size: 0.1
+  categorical_features:
+    - "plan_contratado"
+    - "region"
+    - "metodo_pago"
+  numerical_features:
+    - "antiguedad_meses"
+    - "gasto_mensual_promedio"
+    - "num_llamadas_soporte"
+
+feature_engineering:
+  create_ratio_features: true
+  handle_missing: "median"       # opciones: median, mean, drop
+  scale_numerical: true
+  encode_categorical: "onehot"   # opciones: onehot, target, ordinal
+
+model:
+  algorithm: "xgboost"           # opciones: random_forest, xgboost, logistic_regression
+  hyperparameters:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+  cross_validation:
+    n_folds: 5
+    metric: "roc_auc"
+
+mlflow:
+  enabled: true
+  tracking_uri: "http://localhost:5000"
+  experiment_name: "churn_prediccion_2026"
+
+api:
+  base_url: "https://api.miempresa.com/v1"
+  timeout_seconds: 30
+  # las claves reales van en variables de entorno (.env), no aquí
+  api_key_env_var: "CHURN_API_KEY"

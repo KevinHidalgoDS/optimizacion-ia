@@ -2,18 +2,21 @@ site_name: Trabajo de maestría en Ingeniería Analítica
 site_author: Kevin Hidalgo
 
 theme:
-  name: material
-  palette:
-    # Modo claro
-    - scheme: default
-      toggle:
-        icon: material/brightness-7
-        name: Cambiar a modo oscuro
-    # Modo oscuro
-    - scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: Cambiar a modo claro
+  name: dracula
+  logo: assets/img/dracula.png
+  favicon: assets/favicon.ico
+#  name: material
+#  palette:
+#    # Modo claro
+#    - scheme: default
+#      toggle:
+#        icon: material/brightness-7
+#        name: Cambiar a modo oscuro
+#    # Modo oscuro
+#    - scheme: slate
+#      toggle:
+#        icon: material/brightness-4
+#        name: Cambiar a modo claro
   features:
     - navigation.tabs
     - navigation.sections
@@ -25,11 +28,15 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [src] # Directorio donde reside tu código fuente Python
+          paths: [.] # Directorio donde reside tu código fuente Python
           options:
             docstring_style: google # Compatible con formato Google o NumPy
             show_root_heading: true
             show_source: true
+            # show_attributes: false # <-- Oculta todas las variables y constantes
+            filters:
+              - "!^_[^_]"             # (Por defecto) Oculta variables privadas con un solo guion bajo
+              - "!^__[a-zA-Z0-9_]+__$" # Oculta todas las variables dunder (__version__, __authors__, etc.)
   - mkdocs-jupyter
 
 markdown_extensions:
@@ -54,4 +61,4 @@ extra_javascript:
 
 nav:
   - Inicio: index.md
-  - Referencia API: api_referencia.md
+  - src: src.md
