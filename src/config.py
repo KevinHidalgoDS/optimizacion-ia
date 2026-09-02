@@ -505,9 +505,6 @@ def _generate_fallback_name() -> str:
         return "pycharm_script"
 
 
-
-# main_name = get_main_name()
-# main_name = get_main_name_with_pycharm_detection()
 main_name = get_main_name_with_pycharm_detection() if CONFIG.environment.ide == "PyCharm" else get_main_name()
 LOG_FILE = LOG_DIRECTORY / (
     f"{strftime('%Y%m%d%H%M%S', localtime())}_{main_name}.log"
