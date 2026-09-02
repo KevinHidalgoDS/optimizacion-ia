@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main # Se ejecuta cada vez que hay cambios en la rama main
+
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
