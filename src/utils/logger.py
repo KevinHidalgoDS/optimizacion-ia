@@ -45,6 +45,7 @@ from src import config
 
 VAR_PAD = "=" * 40
 RESET = '\033[00m'
+CONFIG = config.CONFIG
 
 class StripAnsiFormatter(logging.Formatter):
     """Formatter que elimina secuencias ANSI antes de escribir al log."""
