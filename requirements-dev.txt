@@ -4,12 +4,14 @@
 # art of code
 black
 flake8
-pylint
 isort
-pydocstyle
-taskipy
-ruff
 mypy
+pip-tools
+pydocstyle
+pylint
+python-dotenv
+ruff
+taskipy
 
 # tests
 coverage
