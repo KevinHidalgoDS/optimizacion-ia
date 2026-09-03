@@ -1,0 +1,23 @@
+# Configuración central del proyecto — rutas, parámetros y opciones del pipeline
+
+project:
+  name: "optimizacion-ia"
+  version: "0.2.0"
+  seed: 42
+
+paths:
+  data:
+    raw: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/data/raw/"
+    interim: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/data/interim/"
+    processed: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/data/processed/"
+    external: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/data/external/"
+  models:
+    trained: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/models/trained/"
+    checkpoints: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/models/checkpoints/"
+  reports:
+    figures: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/reports/figures/"
+
+environment:
+  nombre: "PRB"  # PRD
+  entorno: "nube"  # nube
+  ide: "Colab"
