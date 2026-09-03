@@ -1,23 +1,81 @@
-# Configuración central del proyecto — rutas, parámetros y opciones del pipeline
+# ============================================================================
+# CONFIGURACIÓN DEL PROYECTO: optimizacion-ia
+# ============================================================================
+# Este archivo contiene todas las configuraciones del proyecto.
+# Los comentarios explican cada sección y parámetro.
+
+# ============================================================================
+# PARÁMETROS DEL PROYECTO
+# ============================================================================
 
 project:
+  # Información general del proyecto
   name: "optimizacion-ia"
-  version: "0.2.0"
+  version: "1.0.0"
+  description: "Proyecto de optimización con técnicas de inteligencia artificial"
+  author: "Kevin Hidalgo"
+  email: "kfhidalgoh@unal.edu.co"
+
+# Parámetros de entrenamiento por defecto
+training:
+  batch_size: 32
+  learning_rate: 0.001
+  epochs: 100
+  validation_split: 0.2
+  early_stopping_patience: 10
+
+# Parámetros de datos
+data:
   seed: 42
+  test_size: 0.2
+  shuffle: true
+
+# Parámetros de visualización
+visualization:
+  figure_dpi: 300
+  figure_size: [12, 8]
+  style: "seaborn-v0_8-darkgrid"
+  color_palette: "viridis"
+
+# ============================================================================
+# RUTAS DEL PROYECTO
+# ============================================================================
+# Las rutas son relativas al directorio raíz del proyecto
+# En Google Colab, se ajustarán automáticamente
 
 paths:
+  # Rutas para datos
   data:
-    raw: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/data/raw/"
-    interim: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/data/interim/"
-    processed: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/data/processed/"
-    external: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/data/external/"
+    raw: "data/raw"          # Datos sin procesar
+    interim: "data/interim"   # Datos en proceso de limpieza
+    processed: "data/processed"  # Datos listos para análisis
+    external: "data/external"  # Datos de fuentes externas
+  # Rutas para modelos
   models:
-    trained: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/models/trained/"
-    checkpoints: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/models/checkpoints/"
+    trained: "models/trained"   # Modelos entrenados guardados
+    checkpoints: "models/checkpoints"  # Checkpoints durante entrenamiento
+    logs: "models/logs"        # Logs de entrenamiento
+  # Rutas para reportes y visualizaciones
   reports:
-    figures: "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/reports/figures/"
+    figures: "reports/figures"  # Figuras y gráficos generados
+    notebooks: "reports/notebooks"  # Notebooks de análisis
+    documents: "reports/documents"  # Documentación generada
+
+# ============================================================================
+# CONFIGURACIÓN DEL ENTORNO
+# ============================================================================
+# Esta sección es gestionada automáticamente por el script config.py
 
 environment:
   nombre: "PRB"  # PRD
-  entorno: "nube"  # nube
-  ide: "Colab"
+  entorno: "nube"  # nube Será actualizado automáticamente: 'local', 'colab', 'jupyter'
+  ide: "Colab"  # IDE utilizado para desarrollo
+
+# ============================================================================
+# CONFIGURACIÓN DE LOGGING
+# ============================================================================
+logging:
+  level: "INFO"  # Niveles: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s [%(levelname)s] %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+  file: "logs"  # Archivo de log (relativo a la raíz del proyecto)

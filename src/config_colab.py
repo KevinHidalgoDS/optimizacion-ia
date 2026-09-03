@@ -33,481 +33,211 @@ __status__ = "Desarrollo"
 __version__ = "1.0.0"
 __date__ = "2026-09-02"
 
-import inspect
+import hashlib
+import logging
 import os
 import sys
+import uuid
 from pathlib import Path
 from time import localtime, strftime
 
 import yaml
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 load_dotenv()
 
+# ============================================================================
+# Modelos de datos para validación
+# ============================================================================
+class ProjectConfig(BaseModel):
+    """Información general del proyecto."""
+    name: str = Field(..., description="Nombre del proyecto")
+    version: str = Field(..., description="Version del proyecto")
+    description: str = Field(..., description="Descripcion del proyecto")
+    author: str = Field(..., description="Autor del proyecto")
+    email: str = Field(..., description="Correo del autor del proyecto")
+
 
 class PathsData(BaseModel):
-    raw: str
-    interim: str
-    processed: str
-    external: str
+    """Configuración de rutas para datos."""
+    raw: str = Field(..., description="Ruta para datos crudos")
+    interim: str = Field(..., description="Ruta para datos intermedios")
+    processed: str = Field(..., description="Ruta para datos procesados")
+    external: str = Field(..., description="Ruta para datos externos")
+
 
 class PathsModels(BaseModel):
-    trained: str
+    """Configuración de rutas para modelos."""
+    trained: str = Field(..., description="Ruta para modelos entrenados")
+
 
 class PathsReports(BaseModel):
-    figures: str
+    """Configuración de rutas para reportes."""
+    figures: str = Field(..., description="Ruta para figuras")
+
 
 class Paths(BaseModel):
-    data: PathsData
-    models: PathsModels
-    reports: PathsReports
+    """Configuración completa de rutas del proyecto."""
+    data: PathsData = Field(..., description="Rutas de datos")
+    models: PathsModels = Field(..., description="Rutas de modelos")
+    reports: PathsReports = Field(..., description="Rutas de reportes")
 
-class VarsEnvironment(BaseModel):
-    nombre: str
-    entorno: str
-    ide: str
+
+class EnvironmentConfig(BaseModel):
+    """Configuración del entorno de ejecución."""
+    nombre: str = Field(..., description="Nombre del proyecto")
+    entorno: str = Field(..., description="Entorno de ejecución (local/colab)")
+    ide: str = Field(..., description="IDE utilizado")
+
+
+class LoggingConfig(BaseModel):
+    """Configuración del sistema de logging."""
+    level: str = Field("INFO", description="Nivel de logging")
+    format: str = Field("%(asctime)s [%(levelname)s] %(message)s", description="Formato de logging")
+    date_format: str = Field("%Y-%m-%d %H:%M:%S", description="Formato de fecha")
+    dir: str = Field("logs", description="Directorio de logs")
 
 class Config(BaseModel):
-    project: dict
-    paths: Paths
-    environment: VarsEnvironment
+    """Configuración completa del proyecto."""
+    project: ProjectConfig = Field(..., description="Información general del proyecto")
+    paths: Paths = Field(..., description="Rutas del proyecto")
+    environment: EnvironmentConfig = Field(..., description="Entorno")
+    logging: LoggingConfig = Field(..., description="Configuración de logging")
 
 
-def load_config(
-    path: str = "/content/drive/MyDrive/MaestriaIngAnalitica/optimizacion-ia/src/config/config_colab.yaml"
-) -> Config:
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            raw = yaml.safe_load(f)
-    except FileNotFoundError:
-        ruta_config = Path(__file__).resolve().parent / "config.yaml"
-        with ruta_config.open("r", encoding="utf-8") as f:
-            raw = yaml.safe_load(f)
-    return Config(**raw)
+class EnvironmentManager:
+    """Gestor principal para el entorno de ejecución y configuraciones.
 
-CONFIG = load_config()
-
-# -----------------------------------------------------------------------------
-# DIRECTORIOS LOCALES
-# -----------------------------------------------------------------------------
-
-PROJECT_PATH = Path(__file__).resolve().parent.parent
-LOG_DIRECTORY = (
-    PROJECT_PATH / "logs"
-)
-
-# -----------------------------------------------------------------------------
-# LOGGING
-# -----------------------------------------------------------------------------
-LOG_LEVEL = os.getenv(
-    "LOG_LEVEL",
-    "INFO"
-)
-
-LOG_FORMAT = (
-    "%(asctime)s "
-    "[%(levelname)s] "
-    "%(message)s"
-)
-
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-# -----------------------------------------------------------------------------
-# ARCHIVOS
-# -----------------------------------------------------------------------------
-
-def get_main_name() -> str:
+    Se encarga de detectar si el código se ejecuta en Google Colab o
+    localmente, y ajusta el directorio raíz del proyecto consecuentemente.
     """
-    Obtiene el nombre del archivo o notebook principal en ejecución.
 
-    La función determina el contexto de ejecución (terminal, Jupyter, IPython)
-    y devuelve el nombre base del archivo o notebook.
+    def __init__(self, project_name: str = "optimizacion-ia"):
+        """Inicializa el gestor y carga las configuraciones.
 
-    Returns:
-        str: Nombre del archivo o notebook principal sin extensión.
-    """
-    main_file = _get_main_file_path()
+        Args:
+            project_name (str): Nombre del proyecto para armar la ruta en Drive.
+        """
+        self.project_name = project_name
+        self.is_colab = self._detect_colab()
+        self.base_path = self._set_base_path()
+        self.config = self._load_yaml()
 
-    if main_file:
-        return _extract_name_from_file(main_file)
+    def _detect_colab(self) -> bool:
+        """Verifica si el módulo 'google.colab' está en el sistema.
 
-    return _get_fallback_name()
+        Returns:
+            bool: True si está en Colab, False en local.
+        """
+        return 'google.colab' in sys.modules
 
+    def _set_base_path(self) -> Path:
+        """Define la ruta base del proyecto según el entorno detectado.
 
-def _get_main_file_path() -> Path | None:
-    """
-    Obtiene la ruta del archivo principal en ejecución.
+        Returns:
+            Path: Ruta absoluta a la raíz del proyecto.
+        """
+        if self.is_colab:
+            # Ruta en Drive
+            return Path(f"/content/drive/MyDrive/MaestriaIngAnalitica/{self.project_name}")
+        else:
+            # Asume que este archivo está en src/, un nivel abajo de la raíz
+            return Path(__file__).resolve().parent.parent
 
-    Returns:
-        Optional[Path]: Ruta del archivo principal o None si no se puede determinar.
-    """
-    main_module = sys.modules.get('__main__')
-    if not main_module:
-        return None
+    def _load_yaml(self) -> Config:
+        """Carga el archivo config.yaml y valida su estructura.
 
-    main_file = getattr(main_module, '__file__', None)
-    if not main_file:
-        return None
+        Returns:
+            Config: Objeto validado con los parámetros del YAML.
 
-    return Path(main_file)
+        Raises:
+            FileNotFoundError: Si no se encuentra el archivo de configuración.
+        """
+        config_path = self.base_path / "config" / "config.colab.yaml"
+        logging.debug("config_path: %s", config_path)
 
+        if not config_path.exists():
+            raise FileNotFoundError(f"No se encontró el archivo: {config_path}")
 
-def _extract_name_from_file(file_path: Path) -> str:
-    """
-    Extrae el nombre base del archivo según el contexto de ejecución.
+        with config_path.open("r", encoding="utf-8") as file:
+            raw_config = yaml.safe_load(file)
 
-    Args:
-        file_path: Ruta del archivo principal.
+        return Config(**raw_config)
 
-    Returns:
-        str: Nombre base del archivo o notebook.
-    """
-    file_str = str(file_path)
+    def get_path(self, relative_path: str) -> Path:
+        """Convierte una ruta relativa del YAML a una ruta absoluta del sistema.
 
-    if _is_terminal_execution(file_str):
-        return file_path.stem
+        Args:
+            relative_path (str): Ruta extraída del objeto Config.
 
-    notebook_name = _get_notebook_name()
-    if notebook_name:
-        return notebook_name
-
-    return file_path.stem
-
-
-def _is_terminal_execution(file_path_str: str) -> bool:
-    """
-    Determina si la ejecución es desde terminal (no Jupyter/IPython).
-
-    Args:
-        file_path_str: Ruta del archivo como cadena.
-
-    Returns:
-        bool: True si es ejecución desde terminal, False en caso contrario.
-    """
-    return 'ipykernel' not in file_path_str and 'ipython' not in file_path_str
+        Returns:
+            Path: Ruta absoluta lista para usar.
+        """
+        return self.base_path / relative_path
 
 
-def _get_notebook_name() -> str | None:
-    """
-    Intenta obtener el nombre del notebook en entorno Jupyter/IPython.
+def _get_colab_hash():
+    """Genera un hash corto y único para la sesión actual del kernel."""
+    session_id = f"{os.getpid()}-{uuid.uuid4()}"
+    return hashlib.md5(session_id.encode()).hexdigest()[:8]
 
-    Returns:
-        Optional[str]: Nombre del notebook o None si no se puede obtener.
-    """
+
+def setup_dynamic_logger(env_manager, name=None):
+    """Configura el logger generando el nombre del archivo dinámicamente."""
+    cfg = env_manager.config.logging
+
+    # 1. Simular __file__ en Colab obteniendo el nombre del kernel/notebook
+    file_name = "colab_notebook"
     try:
         from IPython import get_ipython
-        ipython = get_ipython()
-        if not ipython or not hasattr(ipython, 'config'):
-            return None
 
-        connection_file = ipython.config.get('IPKernelApp', {}).get(
-            'connection_file', ''
-        )
-        if not connection_file:
-            return None
-
-        return _clean_notebook_name(connection_file)
-
-    except (ImportError, AttributeError):
-        return None
-
-
-def _clean_notebook_name(connection_file_path: str) -> str:
-    """
-    Limpia y formatea el nombre del notebook desde la ruta de conexión.
-
-    Args:
-        connection_file_path: Ruta del archivo de conexión del kernel.
-
-    Returns:
-        str: Nombre del notebook limpio y formateado.
-    """
-    raw_name = Path(connection_file_path).stem
-    # Eliminar prefijo 'kernel-' y reemplazar guiones por guiones bajos
-    clean_name = raw_name.replace('kernel-', '').replace('-', '_')
-    return clean_name
-
-
-def _get_fallback_name() -> str:
-    """
-    Obtiene un nombre alternativo cuando no se puede determinar el principal.
-
-    Intenta obtener información del entorno interactivo o usa el nombre
-    del script actual como último recurso.
-
-    Returns:
-        str: Nombre alternativo para el contexto actual.
-    """
-    fallback_name = _get_interactive_kernel_name()
-    if fallback_name:
-        return fallback_name
-
-    return Path(__file__).stem
-
-
-def _get_interactive_kernel_name() -> str | None:
-    """
-    Obtiene el nombre del kernel en entorno interactivo (Jupyter/IPython).
-
-    Returns:
-        Optional[str]: Nombre del kernel o None si no es un entorno interactivo.
-    """
-    try:
-        from IPython import get_ipython
-        ipython = get_ipython()
-        if not ipython:
-            return None
-
-        connection_file = ipython.config.get('IPKernelApp', {}).get(
-            'connection_file', ''
-        )
-        if not connection_file:
-            return None
-
-        # Formatear nombre del notebook desde kernel
-        raw_name = Path(connection_file).stem.replace('kernel-', '')
-        return f"notebook_{raw_name}"
-
-    except (ImportError, AttributeError):
-        return None
-
-def get_main_name_with_pycharm_detection() -> str:
-    """
-    Obtiene el nombre del archivo principal con detección mejorada para PyCharm.
-
-    Esta función especializada detecta si el código se ejecuta en PyCharm
-    (incluyendo modo debug) y devuelve el nombre del script o un nombre
-    alternativo cuando no se puede determinar.
-
-    Returns:
-        str: Nombre del archivo principal o un identificador alternativo.
-    """
-    pycharm_context = _detect_pycharm_context()
-
-    if pycharm_context.is_pycharm:
-        _log_pycharm_detection(pycharm_context)
-
-    script_name = _get_script_name_from_sys_argv()
-    if script_name:
-        return script_name
-
-    script_name = _get_script_name_from_main_module()
-    if script_name:
-        return script_name
-
-    script_name = _get_script_name_from_stack_trace(pycharm_context.is_debug)
-    if script_name:
-        return script_name
-
-    return _generate_fallback_name()
-
-
-class _PyCharmContext:
-    """
-    Contexto de ejecución de PyCharm.
-
-    Attributes:
-        is_pycharm (bool): Indica si el entorno es PyCharm.
-        is_debug (bool): Indica si está en modo debug.
-        detected_var (Optional[str]): Variable de entorno que detectó PyCharm.
-    """
-
-    def __init__(self, is_pycharm: bool, is_debug: bool,
-                 detected_var: str | None = None):
-        self.is_pycharm = is_pycharm
-        self.is_debug = is_debug
-        self.detected_var = detected_var
-
-
-def _detect_pycharm_context() -> _PyCharmContext:
-    """
-    Detecta el contexto de ejecución de PyCharm.
-
-    Returns:
-        _PyCharmContext: Contexto con información de detección.
-    """
-    detected_var = _detect_pycharm_environment_variable()
-    is_pycharm = detected_var is not None
-    is_debug = _is_debug_mode_active()
-
-    return _PyCharmContext(is_pycharm, is_debug, detected_var)
-
-
-def _detect_pycharm_environment_variable() -> str | None:
-    """
-    Detecta la presencia de variables de entorno de PyCharm.
-
-    Returns:
-        Optional[str]: Nombre de la variable de entorno detectada o None.
-    """
-    pycharm_vars = [
-        'PYCHARM_HOSTED',
-        'PYCHARM_HELPERS',
-        'PYCHARM_DISPLAY_PORT',
-        'PYCHARM_DEBUG',
-        'PYDEVD_IPYTHON_COMPATIBLE'
-    ]
-
-    for env_var in pycharm_vars:
-        if env_var in os.environ:
-            return env_var
-
-    return None
-
-
-def _is_debug_mode_active() -> bool:
-    """
-    Determina si el modo debug está activo.
-
-    Returns:
-        bool: True si el debug está activo, False en caso contrario.
-    """
-    has_pydevd = 'pydevd' in sys.modules
-    has_trace = getattr(sys, 'gettrace', lambda: None)() is not None
-
-    return has_pydevd or has_trace
-
-
-def _log_pycharm_detection(context: _PyCharmContext) -> None:
-    """
-    Registra la detección de PyCharm en la salida estándar.
-
-    Args:
-        context: Contexto de PyCharm detectado.
-    """
-    if context.detected_var:
-        print(f"PyCharm detectado vía variable: {context.detected_var}")
-
-    if context.is_debug:
-        print("Modo debug de PyCharm detectado")
-
-
-def _get_script_name_from_sys_argv() -> str | None:
-    """
-    Obtiene el nombre del script desde sys.argv (método preferido para PyCharm).
-
-    Returns:
-        Optional[str]: Nombre del script o None si no se puede obtener.
-    """
-    try:
-        if not sys.argv or len(sys.argv) == 0:
-            return None
-
-        script_path = sys.argv[0]
-        if not script_path:
-            return None
-
-        # Verificar si la ruta existe
-        path_obj = Path(script_path)
-        if path_obj.exists():
-            return path_obj.stem
-
-        # Extraer nombre sin ruta
-        script_name = path_obj.stem
-        if script_name and script_name != 'pycharm':
-            return script_name
-
-        return None
-
+        ipy = get_ipython()
+        if ipy and hasattr(ipy, "config"):
+            conn_file = ipy.config.get("IPKernelApp", {}).get("connection_file", "")
+            if conn_file:
+                # Limpia el nombre del archivo de conexión del kernel
+                file_name = Path(conn_file).stem.replace("kernel-", "").replace("-", "_")
+                logging.debug("File name: %s", file_name)
     except Exception:
-        return None
+        pass  # Si falla (ej. en terminal local), usará 'colab_notebook'
 
+    # Si estamos en un script .py local, sí podríamos usar sys.argv[0] o __file__
+    import sys
 
-def _get_script_name_from_main_module() -> str | None:
-    """
-    Obtiene el nombre del script desde el módulo __main__.
+    if not "ipykernel" in sys.modules and len(sys.argv) > 0:
+        file_name = Path(sys.argv[0]).stem
 
-    Returns:
-        Optional[str]: Nombre del script o None si no se puede obtener.
-    """
-    try:
-        main_module = sys.modules.get('__main__')
-        if not main_module or not hasattr(main_module, '__file__'):
-            return None
+    # 2. Generar el nombre del log: YYYYMMDDHHMMSS_{file_name}.log
+    timestamp = strftime("%Y%m%d%H%M%S", localtime())
+    if file_name != "colab_notebook":
+        log_filename = f"{timestamp}_{file_name}.log"
+    else:
+        file_name = name if name else _get_colab_hash()
+        log_filename = f"{timestamp}_{file_name}.log"
+    # 3. Crear directorio y definir ruta completa
+    log_dir = env_manager.get_path(cfg.dir)
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / log_filename
 
-        filepath = main_module.__file__
-        if not filepath:
-            return None
+    # 4. Configurar el Logger
+    logger = logging.getLogger("OptimizacionIA")
+    logger.setLevel(getattr(logging, cfg.level))
 
-        # En PyCharm, a veces __file__ es el script actual
-        if not filepath.endswith('pydevd.py'):
-            return Path(filepath).stem
+    # Limpiar handlers previos si la celda se ejecuta múltiples veces
+    if logger.hasHandlers():
+        logger.handlers.clear()
 
-        return None
+    formatter = logging.Formatter(fmt=cfg.format, datefmt=cfg.date_format)
 
-    except Exception:
-        return None
+    # Handler Consola
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
 
+    # Handler Archivo
+    file_handler = logging.FileHandler(log_path, encoding="utf-8")
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
-def _get_script_name_from_stack_trace(is_debug: bool) -> str | None:
-    """
-    Obtiene el nombre del script desde el stack trace (útil en modo debug).
-
-    Args:
-        is_debug: Indica si el modo debug está activo.
-
-    Returns:
-        Optional[str]: Nombre del script o None si no se puede obtener.
-    """
-    if not is_debug:
-        return None
-
-    try:
-        stack = inspect.stack()
-        for frame in stack:
-            filename = frame.filename
-            if not filename:
-                continue
-
-            # Filtrar archivos de PyCharm y debug
-            if _is_valid_source_file(filename):
-                return Path(filename).stem
-
-        return None
-
-    except Exception:
-        return None
-
-
-def _is_valid_source_file(filename: str) -> bool:
-    """
-    Verifica si un archivo es una fuente válida (no de PyCharm o debug).
-
-    Args:
-        filename: Ruta del archivo a verificar.
-
-    Returns:
-        bool: True si es una fuente válida, False en caso contrario.
-    """
-    exclude_patterns = ['pydevd', 'pycharm', 'debug']
-    filename_lower = filename.lower()
-
-    for pattern in exclude_patterns:
-        if pattern in filename_lower:
-            return False
-
-    return True
-
-
-def _generate_fallback_name() -> str:
-    """
-    Genera un nombre alternativo cuando no se puede determinar el script.
-
-    Returns:
-        str: Nombre alternativo basado en usuario y timestamp.
-    """
-    try:
-        import getpass
-        user = getpass.getuser()
-        timestamp = strftime('%Y%m%d%H%M%S', localtime())
-        return f"pycharm_{user}_{timestamp}"
-
-    except Exception:
-        return "pycharm_script"
-
-
-main_name = get_main_name_with_pycharm_detection() if CONFIG.environment.ide == "PyCharm" else get_main_name()
-LOG_FILE = LOG_DIRECTORY / (
-    f"{strftime('%Y%m%d%H%M%S', localtime())}_{main_name}.log"
-)
+    return logger, log_path
