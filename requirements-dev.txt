@@ -4,12 +4,14 @@
 # art of code
 black
 flake8
-pylint
 isort
-pydocstyle
-taskipy
-ruff
 mypy
+pip-tools
+pydocstyle
+pylint
+python-dotenv
+ruff
+taskipy
 
 # tests
 coverage
@@ -27,3 +29,4 @@ mkdocs
 mkdocs-material
 mkdocstrings-python
 mkdocs-jupyter
+mkdocs-dracula-theme
