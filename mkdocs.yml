@@ -1,4 +1,4 @@
-site_name: Trabajo de maestría en Ingeniería Analítica
+site_name: Optimización e Inteligencia Artificial
 site_author: Kevin Hidalgo
 
 theme:
@@ -28,7 +28,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [.] # Directorio donde reside tu código fuente Python
+          paths: [.] # src Directorio donde reside tu código fuente Python
           options:
             docstring_style: google # Compatible con formato Google o NumPy
             show_root_heading: true
