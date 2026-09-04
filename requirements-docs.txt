@@ -7,3 +7,9 @@ mkdocs-jupyter
 mkdocs-material
 mkdocstrings-python
 mkdocs-dracula-theme
+# Docs codigo
+sphinx
+sphinx-rtd-theme
+sphinx-markdown-builder
+sphinx-math-dollar
+pypandoc
