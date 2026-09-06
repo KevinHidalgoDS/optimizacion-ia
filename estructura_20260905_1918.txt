@@ -1,0 +1,93 @@
+﻿================================================================================
+ESTRUCTURA DE DIRECTORIOS
+================================================================================
+Proyecto: optimizacion-ia
+Ruta: D:\Proyectos\optimizacion-ia
+Fecha: 05/09/2026 19:18:16
+================================================================================
+
+
++-- config [DIR]
+|   +-- config.colab.yaml [FILE]
+|   +-- config.yaml [FILE]
+|   +-- config_example.yaml [FILE]
+|   \-- logging_example.yaml [FILE]
++-- data [DIR]
+|   +-- external [DIR]
+|   |   \-- lorem_ipsum.txt [FILE]
+|   +-- interim [DIR]
+|   |   \-- lorem_ipsum.txt [FILE]
+|   +-- processed [DIR]
+|   |   \-- lorem_ipsum.txt [FILE]
+|   +-- raw [DIR]
+|   |   \-- lorem_ipsum.txt [FILE]
+|   \-- data_dictionary.md [FILE]
++-- docs [DIR]
+|   +-- img [DIR]
+|   |   +-- dracula.png [FILE]
+|   |   +-- dracula.svg [FILE]
+|   |   \-- favicon.ico [FILE]
+|   +-- javascripts [DIR]
+|   |   \-- mathjax.js [FILE]
+|   +-- api_referencia.md [FILE]
+|   +-- index.md [FILE]
+|   \-- src.md [FILE]
++-- models [DIR]
++-- notebooks [DIR]
+|   +-- no_2.Introducción_Pandas.ipynb [FILE]
+|   +-- no_blue_energy_20220218.ipynb [FILE]
+|   \-- no_Index.ipynb [FILE]
++-- reports [DIR]
++-- src [DIR]
+|   +-- utils [DIR]
+|   |   +-- __init__.py [FILE]
+|   |   +-- clean.py [FILE]
+|   |   +-- helpers.py [FILE]
+|   |   +-- helpers_example.py [FILE]
+|   |   +-- list_archivos.py [FILE]
+|   |   \-- logger.py [FILE]
+|   +-- __init__.py [FILE]
+|   +-- config.py [FILE]
+|   +-- config_colab.py [FILE]
+|   +-- config_example.py [FILE]
+|   +-- features.py [FILE]
+|   \-- tmp.py [FILE]
++-- tests [DIR]
++-- .coveragerc [FILE]
++-- .env [FILE]
++-- .flake8 [FILE]
++-- .gitignore [FILE]
++-- .prettierrc [FILE]
++-- estructura_20260905_1911.txt [FILE]
++-- Get-Structure.ps1 [FILE]
++-- LICENSE [FILE]
++-- mkdocs.yml [FILE]
++-- pyproject.toml [FILE]
++-- README.md [FILE]
++-- requirements.txt [FILE]
++-- requirements-dev.txt [FILE]
++-- requirements-docs.txt [FILE]
+\-- sonar-project.properties [FILE]
+
+
++
+============================================================
+ESTADISTICAS DEL PROYECTO
+============================================================
+Total directorios: 21
+Total archivos: 55
+TamaÃ±o total: 2,00 MB
+
+Top 5 extensiones de archivo:
+   - .py: 12 archivos
+   - .txt: 8 archivos
+   - .md: 5 archivos
+   - .xml: 4 archivos
+   - .yaml: 4 archivos
+
+Carpetas excluidas:
+   - .venv
+   - .git
+   - logs
+============================================================
+

@@ -434,3 +434,20 @@ en tus módulos u optimizadores.
 [//]: # ([load_dataset]&#40;https://seaborn.pydata.org/generated/seaborn.load_dataset.html&#41;)
 
 [//]: # (tree /A /F > "estructura_$&#40;Get-Date -Format yyyyMMdd_HHmm&#41;.txt")
+
+```powershell
+# Ejecución básica (excluye carpetas por defecto)
+.\Get-Structure.ps1
+
+# Excluir carpetas personalizadas
+.\Get-Structure.ps1 -ExcludeFolders @('.venv', 'node_modules', '.git', 'logs', 'temp')
+
+# Excluir también archivos ocultos y limitar profundidad
+.\Get-Structure.ps1 -ExcludeHidden -MaxDepth 2
+
+# Guardar en una ubicación específica
+.\Get-Structure.ps1 -OutputDir "C:\Reports" -OutputFileName "mi_proyecto.txt"
+```
+
+
+
