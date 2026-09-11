@@ -1,10 +1,21 @@
 site_name: Optimización e Inteligencia Artificial
+site_description: Documentación y laboratorio de Optimización e Inteligencia Artificial
 site_author: Kevin Hidalgo
+copyright: "Copyright &copy; 2026 Kevin Hidalgo - Universidad Nacional de Colombia"
+
+# Enlace al repositorio (crea el botón directo en la cabecera)
+repo_name: KevinHidalgoDS/optimizacion-ia
+repo_url: https://github.com/KevinHidalgoDS/optimizacion-ia
+
+# -----------------------------------------------------------------------------
+# TEMA
+# -----------------------------------------------------------------------------
 
 theme:
   name: dracula
   logo: img/dracula.png
   favicon: img/favicon.ico
+  language: es
 #  name: material
 #  palette:
 #    # Modo claro
@@ -18,30 +29,60 @@ theme:
 #        icon: material/brightness-4
 #        name: Cambiar a modo claro
   features:
-    - navigation.tabs
-    - navigation.sections
-    - search.suggest
-    - search.highlight
+    - navigation.tabs          # Pestañas en la barra superior
+    - navigation.sections      # Secciones colapsables en la barra lateral
+    - navigation.top           # Botón para volver arriba
+    - search.suggest           # Sugerencias en tiempo real al buscar
+    - search.highlight         # Resaltado de términos buscados
+    - content.code.copy        # Botón para copiar bloques de código con 1 clic
+
+# -----------------------------------------------------------------------------
+# PLUGINS
+# -----------------------------------------------------------------------------
 
 plugins:
-  - search
+  - search:
+      lang: es
   - mkdocstrings:
       handlers:
         python:
           paths: [.] # src Directorio donde reside tu código fuente Python
           options:
             docstring_style: google # Compatible con formato Google o NumPy
+            members_order: source
             show_root_heading: true
             show_source: true
+            show_bases: true
+            show_if_no_docstring: true
+            separate_signature: true
+            merge_init_into_class: true
+            show_signature_annotations: true
             # show_attributes: false # <-- Oculta todas las variables y constantes
             filters:
               - "!^_[^_]"             # (Por defecto) Oculta variables privadas con un solo guion bajo
               - "!^__[a-zA-Z0-9_]+__$" # Oculta todas las variables dunder (__version__, __authors__, etc.)
-  - mkdocs-jupyter
+  - mkdocs-jupyter:
+      include_source: true
+      ignore_h1_titles: true
+
+# -----------------------------------------------------------------------------
+# EXTENSIONES DE MARKDOWN
+# -----------------------------------------------------------------------------
 
 markdown_extensions:
+  # Notificaciones / Callouts (admonitions: !!! note, !!! warning, etc.)
   - admonition
   - pymdownx.details
+  # Tablas estándar
+  - tables
+  # Permite atributos en Markdown (ej: {: width="300" } o {: .center })
+  - attr_list
+  # Permite usar Markdown dentro de etiquetas HTML
+  - md_in_html
+  # Enlaces permanentes (anclas) en encabezados
+  - toc:
+      permalink: true
+  # Resaltado de sintaxis en bloques de código
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -51,13 +92,28 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  # Pestañas para código múltiple (ej: Python / Bash)
+  - pymdownx.tabbed:
+      alternate_style: true
+  # Resaltado de código en línea
+  - pymdownx.inlinehilite
+  # Soporte para fórmulas matemáticas (LaTeX)
   - pymdownx.arithmatex:
       generic: true
 
+# -----------------------------------------------------------------------------
+# SCRIPTS EXTRA (MathJax)
+# -----------------------------------------------------------------------------
+
 extra_javascript:
   - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  # polyfill.io ELIMINADO por motivos de seguridad
+  # - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+# -----------------------------------------------------------------------------
+# NAVEGACIÓN
+# -----------------------------------------------------------------------------
 
 nav:
   - Inicio: index.md

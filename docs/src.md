@@ -1,4 +1,4 @@
-# Módulos Comunes (`src`)
+# Código fuente (`src`)
 
 El módulo src es el back-end de la solución del proyecto, contiene 7 librerías funcionales
 principales. Estas son llamadas por las Azure Functions (AZF).
@@ -51,6 +51,9 @@ Estas funciones sirven para tener toda la integración con Azure Data Lake para 
     options:
       show_if_no_docstring: true
       show_bases: true
+
+Para documentar las funciones es mejor usar sphinx, para todo lo demas
+MkDocs funciona bien
 
 [//]: # (# Documentación Completa del Proyecto)
 
