@@ -4,6 +4,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linter: Flake8 & SonarQube](https://img.shields.io/badge/linter-flake8_|_sonarqube-brightgreen.svg)](https://flake8.pycqa.org/)
 [![Data Versioning: DVC](https://img.shields.io/badge/data-DVC-orange.svg)](https://dvc.org/)
+[![GitHub Repository](https://img.shields.io/badge/repository-GitHub-181717.svg)](https://github.com/KevinHidalgoDS/optimizacion-ia)
 
 ## 📖 Descripción del Proyecto
 
