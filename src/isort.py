@@ -1,16 +1,11 @@
 import sys
+from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
-from sklearn import datasets, metrics
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, train_test_split
-from sklearn.preprocessing import MinMaxScaler
-from skopt import BayesSearchCV
+from src.graph.fun_graph_matplotlib import FnGraphMat
+from src.utils import lecturaExcel as lE
 from src.utils import logger as log
-from src.utils.estiloDashboard import estilo_dashboard
+from src.utils.statisticsBase import column_overview, detectar_outliers, numeric_descriptive_stats
 
 print("hello world")

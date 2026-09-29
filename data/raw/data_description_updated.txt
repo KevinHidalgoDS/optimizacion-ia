@@ -1,0 +1,74 @@
+The Ames Housing dataset is a comprehensive collection of real estate data from Ames, Iowa. This dataset contains detailed information on 1,460 residential properties, each described by numerical, categorical, and ordinal features related to physical characteristics, quality, location, and amenities of the homes. The main goal is to predict the final sale price (SalePrice) of each house using these attributes.
+
+Features:
+
+Id: Unique identifier for each property.
+
+SalePrice: Final selling price of the house (target variable for regression).
+
+GrLivArea: Above-ground living area (in square feet), excluding basement, garage, and porches.
+
+YearBuilt: Year the house was originally constructed.
+
+YearRemodAdd: Year of the most recent remodeling or addition.
+
+1stFlrSF: Total area of the first floor.
+
+2ndFlrSF: Total area of the second floor.
+
+NumFloors: Number of floors.
+
+HasBasement: Indicator of whether the house has a basement.
+	Yes
+	No
+
+TotalBsmtSF: Total basement area (finished and unfinished), in square feet.
+
+Garage: Indicator of whether the house has a garage.
+	Yes
+	No
+
+GarageArea: Area of the garage (in square feet).
+
+GarageCars: Capacity of the garage (number of cars).
+
+KitchenQual: Kitchen quality rating (e.g., Excellent, Good, Typical, Fair, Poor).
+	Ex	Excellent
+	Gd	Good
+	TA	Average/Typical
+	Fa	Fair
+	Po	Poor
+
+	
+	################################ Can use the code below to rating kitchen quality with a numerical scale
+	kitchen_quality_mapping = {
+		"Ex": 5,  #Excellent
+		"Gd": 4,  #Good
+		"TA": 3,  #Typical/Average
+		"Fa": 2,  #Fair
+		"Po": 1   #Poor
+	}
+
+	#apply the mapping to convert KitchenQual to numeric scale
+	df["KitchenQual"] = df["KitchenQual"].map(kitchen_quality_mapping)
+	##########################################
+
+TotRmsAbvGrd: Total number of rooms above ground (excluding bathrooms).
+
+BedroomAbvGr: Number of bedrooms above ground.
+
+TotalBathrooms: Total number of bathrooms, computed as:
+	TotalBathrooms=FullBath + 0.5 × HalfBath + BsmtFullBath + 0.5 × BsmtHalfBath
+
+OverallQual: Overall quality rating of the house’s materials and finished (scale from 1 to 10).
+
+PoolQC: Pool quality rating (e.g., Excellent, Good, Fair, NA if no pool).
+	Ex	Excellent
+	Gd	Good
+	TA	Average/Typical
+	Fa	Fair
+	No Pool	No Pool
+
+Pool: Indicator of whether the property has a pool.
+	Yes
+	No
